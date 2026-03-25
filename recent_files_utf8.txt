@@ -1,0 +1,6 @@
+﻿C:\women-safety-app\expo-env.d.ts
+C:\women-safety-app\recent_files.txt
+C:\women-safety-app\.expo\types\router.d.ts
+C:\women-safety-app\.git\FETCH_HEAD
+C:\women-safety-app\.git\index
+C:\women-safety-app\backend\activeEmergencies.json

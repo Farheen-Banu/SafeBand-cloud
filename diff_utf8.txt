@@ -1,0 +1,888 @@
+﻿diff --git "a/C:\\Users\\farhe_z2vplri\\AppData\\Roaming\\Code\\User\\History\\-7011d0eb\\Bob4.html" "b/C:\\women-safety-app\\backend\\dashboard.html"
+index 06d295b..51776e1 100644
+--- "a/C:\\Users\\farhe_z2vplri\\AppData\\Roaming\\Code\\User\\History\\-7011d0eb\\Bob4.html"
++++ "b/C:\\women-safety-app\\backend\\dashboard.html"
+@@ -1,171 +1,800 @@
+ <!DOCTYPE html>
+-<html lang="en">
++<html lang="en" data-bs-theme="light">
+ 
+ <head>
+   <meta charset="UTF-8">
+-  <title>SafeBand Command</title>
++  <title>SafeBand Alert Monitoring System</title>
++
++  <!-- Bootstrap 5 -->
++  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
++  <!-- Bootstrap Icons -->
++  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
++  <!-- Leaflet CSS -->
+   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+   <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+-  <style>
+-    :root {
+-      --primary: #9b59b6;
+-      --danger: #e91e63;
+-      --dark: #2d3436;
+-      --success: #2ecc71;
+-    }
++  <!-- Google Fonts -->
++  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+ 
++  <style>
+     body {
+       margin: 0;
+       display: flex;
++      flex-direction: column;
+       height: 100vh;
+-      font-family: 'Segoe UI', sans-serif;
+-      background: #f0f2f5;
++      background: #fdf2f8;
++      /* Pastel pink background */
++      overflow: hidden;
++      font-family: 'Outfit', sans-serif;
++    }
++
++    /* Navbar customization */
++    .top-navbar {
++      background-color: #fbcfe8;
++      /* Pastel pink matching app SOS button */
++      box-shadow: 0 4px 12px rgba(251, 207, 232, 0.4);
++      z-index: 2000;
++      border-bottom: 2px solid #f9a8d4;
++    }
++
++    .status-indicator {
++      letter-spacing: 1px;
++    }
++
++    .blink {
++      animation: blinker 1.5s linear infinite;
++    }
++
++    @keyframes blinker {
++      50% {
++        opacity: 0;
++      }
++    }
++
++    /* Layout structure */
++    .main-container {
++      display: flex;
++      flex-grow: 1;
++      overflow: hidden;
+     }
+ 
+     .sidebar {
+-      width: 400px;
+-      background: white;
+-      border-right: 1px solid #ddd;
++      width: 450px;
++      min-width: 450px;
++      max-width: 450px;
++      background: #ffffff;
++      border-right: 2px solid #fbcfe8;
+       display: flex;
+       flex-direction: column;
+       z-index: 1000;
++      box-shadow: 4px 0 15px rgba(219, 39, 119, 0.05);
+     }
+ 
+-    .header {
+-      padding: 20px;
+-      border-bottom: 3px solid var(--primary);
++    /* Tabs customization */
++    .nav-tabs .nav-link {
++      border: none;
++      border-right: 1px solid #fbcfe8;
++      border-radius: 0;
++      padding: 15px 20px;
++      font-weight: 600;
++      color: #9ca3af;
++      background: #fdf2f8;
++      cursor: pointer;
++      transition: background 0.3s;
+     }
+ 
++    .nav-tabs .nav-link:hover {
++      background: #fce7f3;
++    }
++
++    .nav-tabs .nav-link.active {
++      background: #ffffff;
++      color: #d81b60;
++      /* Vibrant pink active state */
++      border-top: 3px solid #d81b60;
++      border-bottom: 2px solid #ffffff;
++      margin-bottom: -1px;
++    }
++
++    .nav-tabs .nav-link.danger-tab {
++      color: #fb7185;
++    }
++
++    .nav-tabs .nav-link.danger-tab.active {
++      border-top-color: #fb7185;
++    }
++
++    /* Custom Scrollbar for incidents */
+     #incidentList {
+       flex-grow: 1;
+       overflow-y: auto;
+-      padding: 15px;
++      background: #fffdf9;
++      /* Slightly warm white matching app */
+     }
+ 
++    #incidentList::-webkit-scrollbar {
++      width: 6px;
++    }
++
++    #incidentList::-webkit-scrollbar-thumb {
++      background-color: #d81b60;
++      border-radius: 4px;
++    }
++
++    /* Victim Cards */
+     .victim-card {
+-      background: white;
++      transition: all 0.3s ease;
++      border-left: 6px solid #fef08a !important;
++      /* Pastel yellow border */
++      border: 1px solid #fce7f3;
+       border-radius: 12px;
+-      padding: 15px;
+-      margin-bottom: 12px;
+-      border-left: 6px solid var(--danger);
+-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+     }
+ 
+     .duress {
+-      background: #000 !important;
+-      color: white !important;
+-      border-left: 10px solid red !important;
++      background-color: #fef08a !important;
++      /* High-contrast yellow */
++      color: #000000 !important;
++      border-left-color: #f43f5e !important;
++      animation: pulse-red 1.2s infinite alternate;
++    }
++
++    .duress .card-title,
++    .duress .text-muted,
++    .duress .text-dark,
++    .duress label {
++      color: #000000 !important;
++    }
++
++    .duress i {
++      color: #000000 !important;
++    }
++
++    .duress .alert {
++      background-color: #000000 !important;
++      color: #fef08a !important;
++      border-color: #000000 !important;
+     }
+ 
++    .duress,
++    .duress-silent {
++      background-color: #000000 !important;
++      color: #fef08a !important;
++      border-color: #000000 !important;
++      animation: pulse-red 1.5s infinite alternate;
++    }
++
++    .lost {
++      background-color: #111827 !important;
++      color: #ffffff !important;
++      border-left-color: #fb923c !important;
++    }
++
++    .lost .card-title,
++    .lost .text-muted,
++    .lost .text-dark,
++    .lost label {
++      color: #ffffff !important;
++    }
++
++    @keyframes pulse-red {
++      0% {
++        box-shadow: 0 0 5px rgba(244, 63, 94, 0.2);
++      }
++
++      100% {
++        box-shadow: 0 0 15px rgba(244, 63, 94, 0.5);
++      }
++    }
++
++    .black-text,
++    .lost .black-text,
++    .duress .black-text,
++    .duress-silent .black-text {
++      color: #000000 !important;
++    }
++
++    /* Evidence Log */
+     .evidence-log {
+-      height: 180px;
+-      background: var(--dark);
+-      color: #00d2d3;
+-      padding: 10px;
+-      font-family: monospace;
+-      font-size: 11px;
+-      overflow-y: auto;
++      height: 250px;
++      background: #fffdf9;
++      font-size: 13px;
++      border-top: 2px solid #d81b60;
++      display: flex;
++      flex-direction: column;
++    }
++
++    .log-line {
++      margin-bottom: 6px;
++      line-height: 1.4;
++      border-bottom: 1px dashed #e9ecef;
++      padding-bottom: 4px;
+     }
+ 
+     #map {
+       flex-grow: 1;
++      min-height: 100%;
++      position: relative;
+     }
+ 
+-    .tag {
+-      font-size: 9px;
+-      padding: 2px 6px;
+-      border-radius: 3px;
+-      color: white;
+-      font-weight: bold;
+-      background: var(--danger);
++    #mapLoader {
++      position: absolute;
++      top: 0;
++      left: 0;
++      right: 0;
++      bottom: 0;
++      background-color: #f8f9fa;
++      z-index: 1000;
++      display: flex;
++      flex-direction: column;
++      justify-content: center;
++      align-items: center;
+     }
+   </style>
+ </head>
+ 
+ <body>
+-  <audio id="alarmSound" src="alarm.mp3"></audio>
+-  <div class="sidebar">
+-    <div class="header">
+-      <h2 style="margin:0; color:var(--primary);">SAFEBAND COMMAND</h2>
+-      <div style="font-size:10px; color:var(--success);">ΓùÅ LIVE PERSISTENT UPLINK</div>
+-      <button onclick="localStorage.clear(); location.reload();"
+-        style="margin-top:10px; font-size:9px; cursor:pointer;">FORCE CLEAR ALL SESSIONS</button>
++  <audio id="alarmSound" src="alarm.mp3" preload="auto"></audio>
++
++  <!-- Top Navigation (Pastel Pink) -->
++  <nav class="navbar top-navbar py-2 px-4 shadow-sm">
++    <div class="d-flex flex-column">
++      <h3 class="mb-0 fw-bold" style="color: #db2777; letter-spacing: -0.5px;">SafeBand</h3>
++      <div class="text-uppercase small fw-bold" style="color: #f472b6; letter-spacing: 2px; font-size: 0.75rem;">Alert
++        Monitoring Center</div>
++    </div>
++    <div class="status-indicator px-3 py-1 rounded-pill bg-white text-dark shadow-sm">
++      <span class="text-danger blink me-2">ΓùÅ</span><span class="fw-bold" style="color: #d81b60;">SYSTEM ACTIVE</span>
+     </div>
+-    <div id="incidentList">
+-      <div id="noSignal" style="text-align:center; padding-top:20px; color:#999;">AWAITING SOS...</div>
++    <button class="btn btn-warning btn-sm fw-bold px-3 py-2 shadow-sm" onclick="clearAllData()"
++      style="background-color: #fde047; border: 1px solid #eab308; color: #854d0e;">
++      <i class="bi bi-arrow-counterclockwise me-1"></i> RESET SESSIONS
++    </button>
++  </nav>
++
++  <div class="main-container">
++    <div class="sidebar">
++
++      <!-- Tabs Header (Using a flex div so we can append buttons directly like before) -->
++      <div class="nav nav-tabs flex-nowrap overflow-x-auto border-bottom" id="tabsHeader" role="tablist">
++        <button class="tab-btn nav-link active" id="tab-btn-global" onclick="selectTab('global')" type="button"
++          role="tab" style="white-space: nowrap;">
++          <i class="bi bi-globe me-1"></i> All Incidents
++        </button>
++        <button class="tab-btn nav-link" id="tab-btn-evidence" onclick="selectTab('evidence')" type="button" role="tab"
++          style="white-space: nowrap;">
++          <i class="bi bi-folder-fill me-1 text-warning"></i> Evidence Vault
++        </button>
++      </div>
++
++      <div id="incidentList" class="p-3">
++        <div id="noSignal" class="text-center mt-5 text-muted">
++          <i class="bi bi-radar display-4 d-block mb-3" style="color: #fbcfe8;"></i>
++          <span class="fw-bold fs-5" style="color: #9ca3af;">AWAITING SIGNAL</span>
++        </div>
++        <!-- Victim cards will go here -->
++        <div id="cardsContainer"></div>
++
++        <!-- Evidence Vault UI -->
++        <div id="evidenceVaultContainer" style="display: none;">
++          <h5 class="fw-bold mb-3" style="color: #d81b60;"><i class="bi bi-archive-fill me-2"></i>Archived Evidence</h5>
++          <div id="evidenceList"></div>
++        </div>
++      </div>
++
++      <div class="evidence-log">
++        <div class="border-bottom bg-white p-2 d-flex justify-content-between align-items-center shadow-sm z-1">
++          <span class="fw-bold text-uppercase" style="color: #d81b60;"><i class="bi bi-journal-text me-2"></i>Secure
++            Forensics</span>
++        </div>
++        <div id="logContent" class="overflow-auto p-3 flex-grow-1 text-dark"></div>
++      </div>
+     </div>
+-    <div class="evidence-log"><strong>≡ƒÅ¢∩╕Å FORENSIC LOG</strong>
+-      <div id="logContent"></div>
++
++    <div id="mapContainer" style="position: relative; flex-grow: 1;">
++      <div id="mapLoader">
++        <div class="spinner-border text-primary grow mb-3" role="status" style="width: 3rem; height: 3rem;"></div>
++        <h4 class="text-secondary fw-bold tracking-widest">ACQUIRING MONITORING LOCATION...</h4>
++        <p class="text-muted small">Awaiting browser permission or IP fallback.</p>
++      </div>
++      <div id="map" style="position: absolute; top:0; bottom:0; left:0; right:0;"></div>
+     </div>
+   </div>
+-  <div id="map"></div>
+ 
++  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+   <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
++
+   <script>
+-    const socket = io("http://localhost:5000");
+-    const map = L.map("map").setView([12.9716, 77.5946], 15);
+-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
++    const SERVER_URL = "http://localhost:5000";
++    const socket = io(SERVER_URL);
++
++    // Command Center Coordinate
++    let COMMAND_CENTER = null;
++    let baseMarker = null;
++    let map = null;
++
++    const baseIconObj = L.icon({
++      iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
++      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
++      iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]
++    });
++
++    function setCommandLocation(lat, lng, desc) {
++      document.getElementById('mapLoader').style.display = 'none'; // hide loader
++
++      COMMAND_CENTER = L.latLng(lat, lng);
+ 
+-    // ≡ƒÆ╛ Persistence Logic
+-    let activeSessions = JSON.parse(localStorage.getItem('safeBand_sessions') || "{}");
++      if (!map) {
++        map = L.map("map").setView(COMMAND_CENTER, 14);
++        // Using Humanitarian OpenStreetMap tiles - extremely reliable for tactical use
++        L.tileLayer("https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png", {
++          attribution: '&copy; OpenStreetMap contributors, Temporary HOT style',
++          maxZoom: 19
++        }).addTo(map);
++      } else {
++        map.setView(COMMAND_CENTER, 14);
++      }
++
++      if (baseMarker) map.removeLayer(baseMarker);
++      baseMarker = L.marker(COMMAND_CENTER, { icon: baseIconObj, draggable: true })
++        .addTo(map)
++        .bindPopup(`<b>${desc}</b><br><span id="baseAddress">Locating precise address...</span>`)
++        .bindTooltip(`<div class="badge" style="background-color: #db2777;">COMMAND CENTER</div>`, { permanent: true, direction: "bottom", offset: [0, 10] })
++        .openPopup();
++
++      const fetchBaseAddress = (lat, lng) => {
++        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`)
++          .then(res => res.json())
++          .then(geo => {
++            const addrEl = document.getElementById('baseAddress');
++            if (addrEl && geo && geo.display_name) {
++              addrEl.innerHTML = `≡ƒôì ${geo.display_name}`;
++            }
++          })
++          .catch(e => console.warn("Reverse geocode failed for base", e));
++      };
++
++      fetchBaseAddress(lat, lng);
+ 
+-    function log(user, msg, color = "#00d2d3") {
++      baseMarker.on('dragend', function (event) {
++        const marker = event.target;
++        const position = marker.getLatLng();
++        COMMAND_CENTER = position;
++        log("SYSTEM", "Monitoring Base Relocated to: " + position.lat.toFixed(4) + ", " + position.lng.toFixed(4), "#6366f1");
++
++        document.getElementById('baseAddress').innerHTML = "Locating precise address...";
++        fetchBaseAddress(position.lat, position.lng);
++
++        // Dynamic Refresh: Update all distances UI without full redraw
++        Object.keys(activeSessions).forEach(userId => {
++          const vPos = activeSessions[userId].marker.getLatLng();
++          const distanceM = vPos.distanceTo(COMMAND_CENTER);
++          const distanceStr = distanceM > 1000 ? (distanceM / 1000).toFixed(1) + "km" : Math.round(distanceM) + "m";
++
++          const card = document.getElementById(`card-${userId}`);
++          if (card) {
++            const distLabel = card.querySelector('.small.fw-bold.text-muted');
++            if (distLabel) distLabel.innerText = `${distanceStr} away`;
++          }
++          if (currentTab === userId) updateRouting(vPos);
++        });
++      });
++
++      setTimeout(() => map.invalidateSize(), 500);
++    }
++
++    // Try HTML5 Geolocation first (works on localhost/https)
++    navigator.geolocation.getCurrentPosition(
++      (pos) => setCommandLocation(pos.coords.latitude, pos.coords.longitude, "Base Monitoring Station (GPS)"),
++      (err) => {
++        console.warn("Geolocation API denied/blocked.", err);
++        setCommandLocation(12.9716, 77.5946, "Base Monitoring Station (Fallback)");
++      },
++      { timeout: 4000 }
++    );
++
++    let currentTab = 'global';
++    let activeRoutingControl = null;
++    let activeSessions = {}; // Will be populated from server state
++
++    function playAlarm() {
++      const audio = document.getElementById("alarmSound");
++      audio.play().catch(e => {
++        console.warn("Autoplay blocked.", e);
++        log("SYSTEM", "Audio playback blocked by browser.", "#dc3545");
++      });
++    }
++
++    function clearAllData() {
++      if (confirm("Are you sure you want to clear all active sessions? This is a destructive action.")) {
++        localStorage.clear();
++        location.reload();
++      }
++    }
++
++    function log(user, msg, color = "#0d6efd") {
+       const entry = document.createElement('div');
+-      entry.innerHTML = `[${new Date().toLocaleTimeString()}] ${user}: ${msg}`;
+-      entry.style.color = color;
++      entry.className = 'log-line';
++      entry.innerHTML = `<span class="text-secondary opacity-75">[${new Date().toLocaleTimeString()}]</span> <strong style="color:${color}">[${user}]</strong> <span class="text-dark">${msg}</span>`;
+       document.getElementById('logContent').prepend(entry);
+     }
+ 
++    function updateRouting(targetLatLng) {
++      if (!COMMAND_CENTER) return; // Wait until base location is fetched
++
++      if (activeRoutingControl) {
++        map.removeControl(activeRoutingControl);
++      }
++
++      if (currentTab === 'global') return;
++
++      // Enable step-by-step instructions by omitting "show" overrides
++      activeRoutingControl = L.Routing.control({
++        waypoints: [COMMAND_CENTER, targetLatLng],
++        routeWhileDragging: false,
++        addWaypoints: false,
++        fitSelectedRoutes: true,
++        lineOptions: { styles: [{ color: '#10b981', opacity: 0.9, weight: 6 }] },
++        createMarker: function () { return null; }
++      }).addTo(map);
++
++      activeRoutingControl.on('routesfound', function (e) {
++        const routes = e.routes;
++        const summary = routes[0].summary;
++        const distanceKm = (summary.totalDistance / 1000).toFixed(2);
++        const timeMin = Math.round(summary.totalTime / 60);
++
++        const etaElement = document.getElementById(`eta-${currentTab}`);
++        if (etaElement) {
++          etaElement.innerHTML = `<i class="bi bi-car-front-fill me-1"></i> <b>RESPONSE ETA:</b> ${timeMin} min (${distanceKm} km)`;
++          etaElement.style.display = 'block';
++        }
++      });
++    }
++
++    function createOrUpdateTab(userId) {
++      let btn = document.getElementById(`tab-btn-${userId}`);
++      if (!btn) {
++        btn = document.createElement('button');
++        btn.className = 'tab-btn nav-link danger-tab fw-bold';
++        btn.id = `tab-btn-${userId}`;
++        btn.innerHTML = `<i class="bi bi-exclamation-octagon-fill text-danger me-1"></i> ${userId}`;
++        btn.setAttribute('type', 'button');
++        btn.setAttribute('role', 'tab');
++        btn.onclick = () => selectTab(userId);
++        document.getElementById('tabsHeader').appendChild(btn);
++      }
++    }
++
++    function removeTab(userId) {
++      const btn = document.getElementById(`tab-btn-${userId}`);
++      if (btn) btn.remove();
++      if (currentTab === userId) selectTab('global');
++    }
++
++    function selectTab(userId) {
++      currentTab = userId;
++
++      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
++      const activeBtn = document.getElementById(`tab-btn-${userId}`);
++      if (activeBtn) activeBtn.classList.add('active');
++
++      const cards = document.querySelectorAll('.victim-card');
++
++      if (userId === 'global') {
++        document.getElementById('evidenceVaultContainer').style.display = 'none';
++        cards.forEach(c => c.style.display = 'block');
++        document.getElementById('noSignal').style.display = cards.length === 0 ? 'block' : 'none';
++
++        if (activeRoutingControl) {
++          map.removeControl(activeRoutingControl);
++          activeRoutingControl = null;
++        }
++
++        if (allLayerMarkers.length > 0) {
++          const group = new L.featureGroup(allLayerMarkers);
++          map.fitBounds(group.getBounds().pad(0.5));
++        } else if (COMMAND_CENTER) {
++          map.setView(COMMAND_CENTER, 14);
++        }
++      } else if (userId === 'evidence') {
++        document.getElementById('noSignal').style.display = 'none';
++        cards.forEach(c => c.style.display = 'none');
++        document.getElementById('evidenceVaultContainer').style.display = 'block';
++
++        if (activeRoutingControl) {
++          map.removeControl(activeRoutingControl);
++          activeRoutingControl = null;
++        }
++
++        fetch(`${SERVER_URL}/api/evidence`)
++          .then(r => r.json())
++          .then(files => {
++            const list = document.getElementById('evidenceList');
++            if (files.length === 0) {
++              list.innerHTML = `<div class="text-center text-muted mt-4"><i class="bi bi-folder-x fs-1"></i><p>No evidence files recorded yet.</p></div>`;
++            } else {
++              list.innerHTML = files.map(f => {
++                const d = new Date(f.time).toLocaleString();
++                const icon = f.type === 'video' ? '≡ƒô╣' : '≡ƒÄÖ∩╕Å';
++                const mediaTag = f.type === 'video'
++                  ? `<video controls class="w-100 mt-2 rounded border border-secondary" src="${SERVER_URL}${f.url}"></video>`
++                  : `<audio controls class="w-100 mt-2" src="${SERVER_URL}${f.url}"></audio>`;
++
++                return `
++                   <div class="card mb-3 shadow-sm border-0">
++                     <div class="card-body p-2 bg-light">
++                       <div class="d-flex justify-content-between">
++                         <strong class="text-primary small">${icon} ${f.filename}</strong>
++                       </div>
++                       <div class="text-muted" style="font-size: 0.75rem;">Recorded: ${d}</div>
++                       ${mediaTag}
++                     </div>
++                   </div>
++                 `;
++              }).join('');
++            }
++          })
++          .catch(e => console.error("Could not load evidence:", e));
++
++      } else {
++        document.getElementById('evidenceVaultContainer').style.display = 'none';
++        cards.forEach(c => {
++          if (c.id === `card-${userId}`) c.style.display = 'block';
++          else c.style.display = 'none';
++        });
++        document.getElementById('noSignal').style.display = 'none';
++
++        if (activeSessions[userId] && activeSessions[userId].marker) {
++          const vPos = activeSessions[userId].marker.getLatLng();
++          updateRouting(vPos);
++        }
++      }
++    }
++
+     function renderIncident(data) {
+       if (!data) return;
+       document.getElementById('noSignal').style.display = 'none';
+       const vPos = L.latLng(data.latitude, data.longitude);
+ 
+-      if (!activeSessions[data.userId].marker) {
+-        activeSessions[data.userId].marker = L.marker(vPos).addTo(map);
+-        const c = document.createElement('div'); c.className = 'victim-card'; c.id = `card-${data.userId}`;
+-        c.innerHTML = `<strong>≡ƒÜ¿ ${data.userId}</strong><br><span class="tag">${data.triggerType}</span>`;
+-        document.getElementById('incidentList').prepend(c);
++      createOrUpdateTab(data.userId);
++
++      const formatTriggerLabel = (type) => {
++        if (type === "BUTTON_SOS") return "SOS BUTTON DETECTED";
++        if (type === "SCREAM_DETECTED_SOS") return "SCREAM DETECTED";
++        if (type === "SHAKE_DETECTED" || type === "SHAKE_DURESS_TRIGGERED") return "SHAKE DETECTED";
++        if (type === "DURESS_CODE_TRIGGERED") return "DURESS CODE ENTERED";
++        if (type === "DEAD_MAN_SWITCH") return "SIGNAL LOST (DEAD MAN SWITCH)";
++        if (type === "LIVE_AUDIO_STARTED") return "AUDIO RECORDING ACTIVE";
++        if (type === "LIVE_VIDEO_STARTED") return "VIDEO RECORDING ACTIVE";
++        if (type === "AUDIO_EVIDENCE_STORED") return "AUDIO EVIDENCE SAVED";
++        if (type === "VIDEO_EVIDENCE_STORED") return "VIDEO EVIDENCE SAVED";
++        return type.replace(/_/g, ' ');
++      };
++
++      if (!activeSessions[data.userId]?.marker) {
++        if (!activeSessions[data.userId]) activeSessions[data.userId] = {};
++
++        const icon = L.icon({
++          iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
++          shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
++          iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]
++        });
++
++        activeSessions[data.userId].marker = L.marker(vPos, { icon: icon })
++          .addTo(map)
++          .bindTooltip(`<b>${data.userId}</b>`, { permanent: true, direction: "top", offset: [0, -35], className: "fw-bold shadow-sm" });
++
++        const c = document.createElement('div');
++        c.className = 'victim-card card mb-3 shadow-sm border-0 bg-white';
++        c.id = `card-${data.userId}`;
++
++        let initialImageHtml = '';
++        if (data.covertImage) {
++          initialImageHtml = `<img src="data:image/jpeg;base64,${data.covertImage}" class="img-fluid rounded mt-2 border border-danger border-2 w-100 shadow-sm"/>`;
++        }
++
++        // Reverse Geocoding Address Fetch placeholder
++        const addressPlaceholderId = `address-${data.userId}`;
++
++        const distanceM = COMMAND_CENTER ? vPos.distanceTo(COMMAND_CENTER) : 0;
++        const distanceStr = distanceM > 1000 ? (distanceM / 1000).toFixed(1) + "km" : Math.round(distanceM) + "m";
++
++        c.innerHTML = `
++          <div class="card-body p-3">
++            <div class="d-flex justify-content-between align-items-center mb-2">
++                <div>
++                  <h5 class="card-title mb-0 fw-bold" style="color: #d81b60;"><i class="bi bi-person-bounding-box me-2" style="color: #ad1457;"></i>${data.userId}</h5>
++                  <div class="small fw-bold text-muted">${distanceStr} away</div>
++                </div>
++                <span class="badge rounded-pill px-2 py-1 text-dark shadow-sm" style="background-color: #fef08a; border: 1px solid #fde047"><i class="bi bi-battery-half me-1"></i>${data.battery}%</span>
++            </div>
++            <div class="small mb-2 p-2 rounded border" style="background-color: #fff1f2; border-color: #fce7f3 !important;">
++                <div class="fw-bold mb-1 black-text"><i class="bi bi-pin-map-fill" style="color: #d81b60;"></i> Physical Address:</div>
++                <div id="${addressPlaceholderId}" class="fst-italic black-text mb-2">Locating via Satellite...</div>
++                <div class="border-top pt-1 mt-1 font-monospace black-text" style="font-size: 0.8rem; border-color: #f8bbd0 !important">
++                  <i class="bi bi-geo-alt-fill black-text"></i> GPS: ${data.latitude.toFixed(4)}, ${data.longitude.toFixed(4)}
++                </div>
++            </div>
++            <div class="alert py-2 px-2 m-0 mt-2 small lh-sm fw-bold border" id="eta-${data.userId}" style="display:none; background-color: #ecfdf5; border-color: #a7f3d0 !important; color: #065f46;">
++                <i class="bi bi-car-front-fill me-1 text-success"></i> Calculating Tactical Route...
++            </div>
++            <div id="audio-container-${data.userId}" class="mt-2 text-dark">
++                ${data.audioUrl ? `<label class="small fw-bold text-secondary mb-1">≡ƒÄÖ∩╕Å SECURE AUDIO EVIDENCE:</label><audio controls class="w-100" src="${SERVER_URL}${data.audioUrl}"></audio>` : ''}
++            </div>
++            <div id="video-container-${data.userId}" class="mt-2 text-dark">
++                ${data.videoUrl ? `<label class="small fw-bold text-secondary mb-1">≡ƒô╣ SECURE VIDEO EVIDENCE:</label><video controls class="w-100 rounded border" src="${SERVER_URL}${data.videoUrl}"></video>` : ''}
++            </div>
++            <div id="image-container-${data.userId}">${initialImageHtml}</div>
++            <span class="badge mt-2 py-2 px-3 shadow-sm" id="tag-${data.userId}" style="background-color: #d81b60; color: white;">${formatTriggerLabel(data.triggerType)}</span>
++          </div>
++        `;
++        document.getElementById('cardsContainer').prepend(c);
++
++        // Fetch Address immediately after rendering using OpenStreetMap Nominatim
++        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${data.latitude}&lon=${data.longitude}&zoom=18&addressdetails=1`)
++          .then(res => res.json())
++          .then(geo => {
++            const addrEl = document.getElementById(addressPlaceholderId);
++            if (addrEl && geo && geo.display_name) {
++              addrEl.innerText = geo.display_name;
++              addrEl.classList.remove('fst-italic');
++            }
++          })
++          .catch(e => {
++            console.warn("Reverse geocode failed", e);
++            const addrEl = document.getElementById(addressPlaceholderId);
++            if (addrEl) addrEl.innerText = "Address lookup failed. Refer to GPS.";
++          });
++
++        if (currentTab !== 'global' && currentTab !== 'evidence' && currentTab !== data.userId) c.style.display = 'none';
++        else if (currentTab === data.userId) updateRouting(vPos);
++
+       } else {
+         activeSessions[data.userId].marker.setLatLng(vPos);
++        const tag = document.getElementById(`tag-${data.userId}`);
++        if (tag) tag.innerText = formatTriggerLabel(data.triggerType);
++
++        if (data.covertImage) {
++          const imgContainer = document.getElementById(`image-container-${data.userId}`);
++          if (imgContainer && imgContainer.innerHTML === '') {
++            imgContainer.innerHTML = `<img src="data:image/jpeg;base64,${data.covertImage}" class="img-fluid rounded mt-2 border border-danger border-2 w-100 shadow-sm"/>`;
++          }
++        }
++
++        if (data.audioUrl) {
++          const audioContainer = document.getElementById(`audio-container-${data.userId}`);
++          if (audioContainer && audioContainer.innerHTML.trim() === '') {
++            audioContainer.innerHTML = `<label class="small fw-bold text-secondary mb-1">≡ƒÄÖ∩╕Å SECURE AUDIO EVIDENCE:</label><audio controls class="w-100" src="${SERVER_URL}${data.audioUrl}"></audio>`;
++          }
++        }
++
++        if (currentTab === data.userId) updateRouting(vPos);
+       }
+ 
+-      if (data.triggerType === "DURESS_CODE_TRIGGERED") {
+-        document.getElementById(`card-${data.userId}`).classList.add('duress');
+-        document.getElementById("alarmSound").play();
++      const card = document.getElementById(`card-${data.userId}`);
++      if (card) {
++        card.classList.remove('duress', 'lost');
++        const isDuress = ["DURESS_CODE_TRIGGERED", "SCREAM_DETECTED_SOS", "BUTTON_SOS", "SHAKE_DURESS_TRIGGERED", "SHAKE_DETECTED"].includes(data.triggerType);
++
++        if (isDuress) {
++          card.classList.add('duress');
++          if (data.triggerType === "DURESS_CODE_TRIGGERED") {
++            playAlarm();
++          }
++        } else if (data.status === "LOST" || data.triggerType === "DEAD_MAN_SWITCH") {
++          card.classList.add('lost');
++        }
+       }
+     }
+ 
+-    // Load existing sessions on refresh
+-    Object.keys(activeSessions).forEach(id => {
+-      renderIncident(activeSessions[id]);
+-      log(id, "SESSION RECOVERED FROM MEMORY", "#f39c12");
+-    });
+-
+     socket.on('updatePoliceMap', (data) => {
++      if (data.triggerType === "DURESS_SILENT_TRIGGERED") {
++        log(data.userId, "≡ƒöÑ SILENT DURESS PIN ENTERED - USER IN DANGER - PLAYING ALARM", "#dc3545");
++        playAlarm();
++
++        // Update the victim card to show red alert without the attacker knowing
++        if (activeSessions[data.userId]) {
++          activeSessions[data.userId].triggerType = "DURESS_SILENT_TRIGGERED";
++          const card = document.getElementById(`card-${data.userId}`);
++          if (card) {
++            card.classList.add('duress-silent');
++            const tag = document.getElementById(`tag-${data.userId}`);
++            if (tag) {
++              tag.innerText = 'USER IN DANGER (DURESS PIN)';
++              tag.style.backgroundColor = '#dc3545'; // pure red
++              tag.style.color = '#ffffff';
++            }
++          }
++        }
++      }
++
+       if (data.triggerType === "USER_REPORTED_SAFE") {
+-        log(data.userId, "Γ£à VERIFIED SAFE", "#2ecc71");
++        log(data.userId, "Γ£à VERIFIED SAFE - INCIDENT CLOSED", "#198754");
+         if (activeSessions[data.userId]) {
+-          map.removeLayer(activeSessions[data.userId].marker);
+-          document.getElementById(`card-${data.userId}`).remove();
++          if (activeSessions[data.userId].marker) map.removeLayer(activeSessions[data.userId].marker);
++          const card = document.getElementById(`card-${data.userId}`);
++          if (card) {
++            card.style.opacity = '0.5';
++            card.style.borderLeftColor = '#198754';
++            const tag = document.getElementById(`tag-${data.userId}`);
++            if (tag) {
++              tag.innerText = 'RESOLVED';
++              tag.className = 'badge bg-success mt-2 py-2 px-3 shadow-sm';
++            }
++            setTimeout(() => {
++              card.remove();
++              removeTab(data.userId);
++              if (activeRoutingControl && currentTab === data.userId) {
++                map.removeControl(activeRoutingControl);
++                activeRoutingControl = null;
++              }
++              if (document.querySelectorAll('.victim-card').length === 0) document.getElementById('noSignal').style.display = 'block';
++            }, 5000);
++          }
+           delete activeSessions[data.userId];
+-          localStorage.setItem('safeBand_sessions', JSON.stringify(activeSessions));
+         }
++
+         return;
+       }
+ 
+-      activeSessions[data.userId] = { ...data };
++      activeSessions[data.userId] = { ...activeSessions[data.userId], ...data };
+       renderIncident(data);
+-      localStorage.setItem('safeBand_sessions', JSON.stringify(activeSessions));
+ 
+-      if (data.triggerType === "LIVE_AUDIO_STARTED") log(data.userId, "≡ƒÄÖ∩╕Å RECORDING ACTIVE", "#9b59b6");
++      if (data.triggerType === "LIVE_AUDIO_STARTED") log(data.userId, "≡ƒÄÖ∩╕Å REMOTE RECORDING ACTIVE", "#0d6efd");
++      else if (data.triggerType === "AUDIO_EVIDENCE_STORED") log(data.userId, "≡ƒÆ╛ AUDIO EVIDENCE SAVED ON DEVICE", "#0dcaf0");
++      else if (data.triggerType === "DURESS_CODE_TRIGGERED" || data.triggerType === "DURESS_SILENT_TRIGGERED") log(data.userId, "≡ƒöÑ DURESS CODE ENTERED", "#dc3545");
++      else if (data.triggerType === "SHAKE_DURESS_TRIGGERED" || data.triggerType === "SHAKE_DETECTED") log(data.userId, "ΓÜá∩╕Å VIOLENT SHAKE DETECTED", "#dc3545");
++      else if (data.triggerType === "SCREAM_DETECTED_SOS") log(data.userId, "≡ƒöè HIGH-dB SCREAM DETECTED", "#dc3545");
++      else if (data.triggerType === "BUTTON_SOS") log(data.userId, "≡ƒÜ¿ EMERGENCY SOS INITIATED", "#dc3545");
++
++      // AUTO-SWITCH TO VICTIM TAB AND SHOW ROUTE ON SOS
++      const isPrioritySOS = ["DURESS_CODE_TRIGGERED", "SCREAM_DETECTED_SOS", "BUTTON_SOS", "SHAKE_DURESS_TRIGGERED", "SHAKE_DETECTED", "DEAD_MAN_SWITCH"].includes(data.triggerType);
++      if (isPrioritySOS) {
++        selectTab(data.userId);
++      }
++    });
++
++    socket.on('evidenceUpload', (data) => {
++      const emoji = data.type === 'video' ? '≡ƒô╣' : '≡ƒÄÖ∩╕Å';
++      log(data.userId, `${emoji} ${data.type.toUpperCase()} EVIDENCE READY FOR PLAYBACK`, "#d81b60");
++
++      if (activeSessions[data.userId]) {
++        if (data.type === 'video') activeSessions[data.userId].videoUrl = data.fileUrl;
++        else activeSessions[data.userId].audioUrl = data.fileUrl;
++
++        const containerId = data.type === 'video' ? `video-container-${data.userId}` : `audio-container-${data.userId}`;
++        const container = document.getElementById(containerId);
++        if (container) {
++          const label = data.type === 'video' ? '≡ƒô╣ SECURE VIDEO EVIDENCE' : '≡ƒÄÖ∩╕Å SECURE AUDIO EVIDENCE';
++          const tag = data.type === 'video' ? `<video controls class="w-100 rounded border" src="${SERVER_URL}${data.fileUrl}"></video>` : `<audio controls class="w-100" src="${SERVER_URL}${data.fileUrl}"></audio>`;
++          container.innerHTML = `<label class="small fw-bold text-secondary mb-1">${label}:</label>${tag}`;
++        }
++      }
+     });
+ 
+     socket.on('deadManSwitch', (data) => {
+-      log(data.userId, "ΓÜá∩╕Å SIGNAL LOST", "#ff4757");
+-      document.getElementById("alarmSound").play();
++      log(data.userId, "ΓÜá∩╕Å AUTOMATED ALERT: UPLINK SIGNAL LOST (>30s silence)", "#fd7e14");
++      // Intentionally not playing alarm per user request
++      if (activeSessions[data.userId]) {
++        activeSessions[data.userId].status = "LOST";
++        renderIncident(activeSessions[data.userId]);
++      }
++    });
++
++    selectTab('global');
++
++    // Hydrate state on load to persist data across page refresh
++    document.addEventListener("DOMContentLoaded", () => {
++      fetch(`${SERVER_URL}/api/state`)
++        .then(r => r.json())
++        .then(state => {
++          Object.values(state).forEach(incident => {
++            activeSessions[incident.userId] = incident;
++            renderIncident(incident);
++          });
++        })
++        .catch(e => console.error("Hydration failed", e));
+     });
+   </script>
+ </body>

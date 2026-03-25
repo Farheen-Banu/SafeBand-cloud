@@ -1,0 +1,30 @@
+{
+  "Sudha": {
+    "userId": "Sudha",
+    "latitude": 12.9697425,
+    "longitude": 77.4840939,
+    "battery": 51,
+    "lastSeen": 1774418463910,
+    "triggerType": "DEAD_MAN_SWITCH",
+    "status": "LOST"
+  },
+  "Farheen ": {
+    "userId": "Farheen ",
+    "latitude": 12.97002,
+    "longitude": 77.4844367,
+    "battery": 80,
+    "lastSeen": 1774421487767,
+    "triggerType": "DEAD_MAN_SWITCH",
+    "status": "LOST"
+  },
+  "Farheen B": {
+    "userId": "Farheen B",
+    "latitude": 12.97002,
+    "longitude": 77.4844367,
+    "battery": 96,
+    "lastSeen": 1774423547336,
+    "triggerType": "VIDEO_EVIDENCE_STORED",
+    "status": "ACTIVE",
+    "videoUrl": "/uploads/audio-1774423545396-700928281.mp4"
+  }
+}
