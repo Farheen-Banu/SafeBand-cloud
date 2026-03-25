@@ -305,7 +305,7 @@
   <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
 
   <script>
-    const SERVER_URL = "http://localhost:5000";
+    const SERVER_URL = window.location.origin;
     const socket = io(SERVER_URL);
 
     // Command Center Coordinate
